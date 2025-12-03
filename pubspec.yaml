@@ -1,0 +1,30 @@
+name: monlist_frontend
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.1
+
+dependencies:
+  custom_navigation_bar: ^0.8.2
+  flutter:
+    sdk: flutter
+  http: ^1.6.0
+  intl: ^0.20.2
+  provider: ^6.1.5+1
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/logo.png
+    - assets/images/bro1.png
+    - assets/images/bro2.png
+    - assets/images/bro3.png
