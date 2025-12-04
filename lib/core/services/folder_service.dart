@@ -25,9 +25,12 @@ class FolderService {
     }
   }
 
-  Future<FoldersResponse> getFolders() async {
+ Future<FoldersResponse> getFolders() async {
     try {
       final response = await _apiService.get(ApiConstants.folders);
+
+      print("RAW API RESPONSE: $response");
+
       return FoldersResponse.fromJson(response);
     } catch (e) {
       rethrow;

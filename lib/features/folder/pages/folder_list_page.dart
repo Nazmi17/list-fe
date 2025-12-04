@@ -1,10 +1,9 @@
-// lib/features/folder/presentation/pages/folder_list_page.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/folder_provider.dart';
 import '../../../../core/providers/task_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
-import '../../../../core/routes/routes.dart'; 
+import '../../../../core/routes/routes.dart';
 import '../widgets/dashboard_stat_widget.dart';
 import '../widgets/folder_card_widget.dart';
 
@@ -16,12 +15,60 @@ class FolderListPage extends StatefulWidget {
 }
 
 class _FolderListPageState extends State<FolderListPage> {
+   Future<void> _showLogoutDialog(
+    BuildContext context,
+    AuthProvider authProvider,
+  ) async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1D1D1D),
+        title: const Text('Logout', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Are you sure you want to logout?',
+          style: TextStyle(color: Colors.grey),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Logout', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldLogout == true) {
+      await authProvider.logout();
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.login,
+          (route) => false,
+        );
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<FolderProvider>().fetchFolders();
-      context.read<TaskProvider>().fetchTasks();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<FolderProvider>().fetchFolders();
+
+      if (mounted) {
+        final folderProvider = context.read<FolderProvider>();
+        final sharedFolderIds = folderProvider.sharedFolders
+            .map((e) => e.id)
+            .toList();
+
+        context.read<TaskProvider>().fetchTasks(
+          sharedFolderIds: sharedFolderIds,
+        );
+      }
     });
   }
 

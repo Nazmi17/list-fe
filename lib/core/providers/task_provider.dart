@@ -34,17 +34,18 @@ class TaskProvider extends ChangeNotifier {
     return _tasks.where((task) => !task.complete).toList();
   }
 
-  Future<void> fetchTasks({
+Future<void> fetchTasks({
     Priority? priority,
-    bool? complete, 
+    bool? complete,
     int? folderId,
+    List<int>? sharedFolderIds, 
   }) async {
     try {
       _isLoading = true;
       _errorMessage = null;
       notifyListeners();
 
-      print('Fetching tasks... Complete param: $complete');
+      List<Task> fetchedTasks = [];
 
       if (complete == null) {
         final results = await Future.wait([
@@ -59,19 +60,32 @@ class TaskProvider extends ChangeNotifier {
             complete: true,
           ),
         ]);
-
-        _tasks = [...results[0], ...results[1]];
-
-        _tasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        fetchedTasks.addAll([...results[0], ...results[1]]);
       } else {
-        _tasks = await _taskService.getTasks(
+        final result = await _taskService.getTasks(
           priority: priority,
           complete: complete,
           folderId: folderId,
         );
+        fetchedTasks.addAll(result);
       }
 
-      print('Total tasks loaded: ${_tasks.length}'); // Debug jumlah data
+      if (sharedFolderIds != null && sharedFolderIds.isNotEmpty) {
+        final sharedTasksFutures = sharedFolderIds.map((id) async {
+          return await _taskService.getTasks(folderId: id);
+        });
+
+        final sharedTasksResults = await Future.wait(sharedTasksFutures);
+
+        for (var list in sharedTasksResults) {
+          fetchedTasks.addAll(list);
+        }
+      }
+
+      _tasks = fetchedTasks;
+      _tasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      print('Total tasks loaded: ${_tasks.length}');
 
       _isLoading = false;
       notifyListeners();
