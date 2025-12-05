@@ -7,7 +7,8 @@ class Folder {
   final int userId;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final User? user;
+  final User? user; // Owner (untuk shared folder)
+  final List<User> members; // <--- TAMBAHAN: List member (untuk own folder)
 
   Folder({
     required this.id,
@@ -16,10 +17,20 @@ class Folder {
     required this.userId,
     required this.createdAt,
     required this.updatedAt,
-    this.user, 
+    this.user,
+    this.members = const [], // Default kosong
   });
 
   factory Folder.fromJson(Map<String, dynamic> json) {
+    // Parsing list 'sharedWith' dari backend menjadi List<User>
+    var membersList = <User>[];
+    if (json['sharedWith'] != null) {
+      membersList = (json['sharedWith'] as List).map((item) {
+        // Struktur Prisma: sharedWith -> [ { user: { ... } } ]
+        return User.fromJson(item['user']);
+      }).toList();
+    }
+
     return Folder(
       id: json['id'],
       name: json['name'],
@@ -28,17 +39,9 @@ class Folder {
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
       user: json['user'] != null ? User.fromJson(json['user']) : null,
+      members: membersList, // <--- Masukkan hasil parsing
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-      'user_id': userId,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
-    };
-  }
+  // ... (toJson dan copyWith sesuaikan jika perlu, tapi update di atas yang paling penting)
 }

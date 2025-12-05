@@ -7,6 +7,7 @@ import '../../../../core/providers/folder_provider.dart';
 import '../../../../core/providers/task_provider.dart';
 import '../../task/widgets/task_card_widget.dart';
 import '../../../core/routes/routes.dart';
+import '../widgets/manage_members_dialog.dart';
 
 class FolderDetailPage extends StatefulWidget {
   final Folder folder;
@@ -203,6 +204,7 @@ class _FolderDetailPageState extends State<FolderDetailPage> {
                     ),
                   ),
 
+                  // Di dalam file folder_detail_page.dart
                   if (isOwner) ...[
                     GestureDetector(
                       onTap: _confirmDeleteFolder,
@@ -213,20 +215,23 @@ class _FolderDetailPageState extends State<FolderDetailPage> {
                       ),
                     ),
                     const SizedBox(width: 12),
+
+                    // --- UPDATE BAGIAN INI ---
                     GestureDetector(
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Manage members coming soon!'),
-                          ),
+                        showDialog(
+                          context: context,
+                          builder: (context) =>
+                              ManageMembersDialog(folder: widget.folder),
                         );
                       },
                       child: const Icon(
-                        Icons.person,
+                        Icons.person, // Atau Icons.group
                         color: Colors.white,
                         size: 28,
                       ),
                     ),
+                    // -------------------------
                   ] else ...[
                     GestureDetector(
                       onTap: _confirmLeaveFolder,
