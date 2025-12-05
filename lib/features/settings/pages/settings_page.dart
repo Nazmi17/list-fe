@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/folder_provider.dart';
 import '../../../../core/providers/task_provider.dart';
-import '../../../../core/providers/user_provider.dart'; // Import UserProvider
+import '../../../../core/providers/user_provider.dart'; 
 import '../../../../core/routes/routes.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -22,7 +22,6 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    // Isi field dengan data user saat ini
     final user = context.read<AuthProvider>().currentUser;
     if (user != null) {
       _emailController.text = user.email;
@@ -38,7 +37,6 @@ class _SettingsPageState extends State<SettingsPage> {
     super.dispose();
   }
 
-  // --- 1. LOGIKA UPDATE USER ---
   Future<void> _handleUpdate() async {
     final authProvider = context.read<AuthProvider>();
     final userProvider = context.read<UserProvider>();
@@ -46,11 +44,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
     if (currentUser == null) return;
 
-    // Sembunyikan keyboard
     FocusScope.of(context).unfocus();
 
-    // Validasi sederhana: Minimal satu field harus terisi (selain default)
-    // Di sini kita kirim saja yang ada di text controller
 
     final success = await userProvider.updateUser(
       userId: currentUser.id,
@@ -74,8 +69,6 @@ class _SettingsPageState extends State<SettingsPage> {
           backgroundColor: Colors.green,
         ),
       );
-      // Opsional: Logout otomatis agar data refresh
-      // _handleLogout();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -88,14 +81,12 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  // --- 2. LOGIKA DELETE USER ---
   Future<void> _handleDeleteAccount() async {
     final authProvider = context.read<AuthProvider>();
     final currentUser = authProvider.currentUser;
 
     if (currentUser == null) return;
 
-    // Tampilkan Dialog Konfirmasi Merah
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -127,11 +118,9 @@ class _SettingsPageState extends State<SettingsPage> {
     if (confirm == true && mounted) {
       final userProvider = context.read<UserProvider>();
 
-      // Panggil API Delete
       final success = await userProvider.deleteUser(currentUser.id);
 
       if (success && mounted) {
-        // Jika berhasil delete, lakukan prosedur Logout (Clear State + Navigasi)
         await _performLogoutSequence();
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -146,7 +135,6 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  // --- 3. LOGIKA LOGOUT ---
   Future<void> _handleLogout() async {
     final shouldLogout = await showDialog<bool>(
       context: context,
@@ -175,21 +163,17 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  // Fungsi helper untuk membersihkan state dan pindah ke login
-  // (Digunakan oleh Logout dan Delete Account)
+
   Future<void> _performLogoutSequence() async {
     final authProvider = context.read<AuthProvider>();
 
-    // 1. Proses Logout API
     await authProvider.logout();
 
     if (mounted) {
-      // 2. BERSIHKAN DATA
       context.read<TaskProvider>().clearState();
       context.read<FolderProvider>().clearState();
-      context.read<UserProvider>().clearState(); // Bersihkan user provider juga
+      context.read<UserProvider>().clearState();
 
-      // 3. Pindah ke halaman Login
       Navigator.pushNamedAndRemoveUntil(
         context,
         AppRoutes.login,
@@ -200,7 +184,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Kita watch UserProvider untuk loading state
     final isLoading = context.watch<UserProvider>().isLoading;
 
     return Scaffold(
@@ -229,7 +212,6 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // --- SECTION 1: CHANGE DATA ---
                 _buildSectionHeader('Change your data'),
                 const SizedBox(height: 20),
                 _buildTextField(
@@ -268,7 +250,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
                 const SizedBox(height: 40),
 
-                // --- SECTION 2: LOGOUT ---
                 _buildSectionHeader('Logout From Your Account'),
                 const SizedBox(height: 20),
                 SizedBox(
