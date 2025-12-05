@@ -27,7 +27,6 @@ class _FolderSelectionDialogState extends State<FolderSelectionDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
             Row(
               children: [
                 Container(

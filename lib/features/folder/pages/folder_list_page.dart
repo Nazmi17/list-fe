@@ -15,7 +15,7 @@ class FolderListPage extends StatefulWidget {
 }
 
 class _FolderListPageState extends State<FolderListPage> {
-   Future<void> _showLogoutDialog(
+  Future<void> _showLogoutDialog(
     BuildContext context,
     AuthProvider authProvider,
   ) async {
@@ -43,7 +43,11 @@ class _FolderListPageState extends State<FolderListPage> {
 
     if (shouldLogout == true) {
       await authProvider.logout();
+
       if (context.mounted) {
+        context.read<TaskProvider>().clearState();
+        context.read<FolderProvider>().clearState();
+
         Navigator.pushNamedAndRemoveUntil(
           context,
           AppRoutes.login,
@@ -60,14 +64,7 @@ class _FolderListPageState extends State<FolderListPage> {
       await context.read<FolderProvider>().fetchFolders();
 
       if (mounted) {
-        final folderProvider = context.read<FolderProvider>();
-        final sharedFolderIds = folderProvider.sharedFolders
-            .map((e) => e.id)
-            .toList();
-
-        context.read<TaskProvider>().fetchTasks(
-          sharedFolderIds: sharedFolderIds,
-        );
+        context.read<TaskProvider>().fetchTasks();
       }
     });
   }
@@ -131,14 +128,13 @@ class _FolderListPageState extends State<FolderListPage> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      // Settings action
+                      _showLogoutDialog(context, authProvider);
                     },
                   ),
                 ],
               ),
             ),
 
-            // Dashboard Title
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Align(
@@ -155,7 +151,6 @@ class _FolderListPageState extends State<FolderListPage> {
             ),
             const SizedBox(height: 20),
 
-            // Dashboard Stats
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(

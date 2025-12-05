@@ -34,11 +34,10 @@ class TaskProvider extends ChangeNotifier {
     return _tasks.where((task) => !task.complete).toList();
   }
 
-Future<void> fetchTasks({
+  Future<void> fetchTasks({
     Priority? priority,
     bool? complete,
     int? folderId,
-    List<int>? sharedFolderIds, 
   }) async {
     try {
       _isLoading = true;
@@ -70,19 +69,11 @@ Future<void> fetchTasks({
         fetchedTasks.addAll(result);
       }
 
-      if (sharedFolderIds != null && sharedFolderIds.isNotEmpty) {
-        final sharedTasksFutures = sharedFolderIds.map((id) async {
-          return await _taskService.getTasks(folderId: id);
-        });
-
-        final sharedTasksResults = await Future.wait(sharedTasksFutures);
-
-        for (var list in sharedTasksResults) {
-          fetchedTasks.addAll(list);
-        }
-      }
-
       _tasks = fetchedTasks;
+
+      final ids = <int>{};
+      _tasks.retainWhere((x) => ids.add(x.id));
+
       _tasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       print('Total tasks loaded: ${_tasks.length}');
@@ -216,6 +207,13 @@ Future<void> fetchTasks({
   }
 
   void clearError() {
+    _errorMessage = null;
+    notifyListeners();
+  }
+
+  void clearState() {
+    _tasks = [];
+    _isLoading = false;
     _errorMessage = null;
     notifyListeners();
   }

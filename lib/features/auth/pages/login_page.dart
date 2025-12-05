@@ -108,7 +108,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // Password Field
                 const Text(
                   'Password',
                   style: TextStyle(color: Colors.white, fontSize: 16),
@@ -161,7 +160,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 40),
 
-                // Login Button
                 Consumer<AuthProvider>(
                   builder: (context, authProvider, child) {
                     return SizedBox(
@@ -200,7 +198,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // Register Link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

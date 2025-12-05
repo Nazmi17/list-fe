@@ -24,7 +24,6 @@ class DashboardStatWidget extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Badge
           Align(
             alignment: Alignment.topLeft,
             child: Container(
@@ -44,7 +43,6 @@ class DashboardStatWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          // Icon
           Container(
             width: 60,
             height: 45,
@@ -55,7 +53,6 @@ class DashboardStatWidget extends StatelessWidget {
             child: Icon(icon, size: 30, color: Colors.black),
           ),
           const SizedBox(height: 16),
-          // Label
           Text(
             label,
             style: const TextStyle(color: Colors.black87, fontSize: 14),

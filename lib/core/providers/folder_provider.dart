@@ -111,6 +111,7 @@ class FolderProvider extends ChangeNotifier {
     try {
       _errorMessage = null;
 
+      // Pastikan service memanggil endpoint /leave yang benar
       await _folderService.leaveSharedFolder(folderId);
 
       _sharedFolders.removeWhere((folder) => folder.id == folderId);
@@ -125,6 +126,14 @@ class FolderProvider extends ChangeNotifier {
   }
 
   void clearError() {
+    _errorMessage = null;
+    notifyListeners();
+  }
+
+  void clearState() {
+    _ownFolders = [];
+    _sharedFolders = [];
+    _isLoading = false;
     _errorMessage = null;
     notifyListeners();
   }

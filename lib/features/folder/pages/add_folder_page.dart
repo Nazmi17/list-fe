@@ -13,7 +13,6 @@ class _AddFolderPageState extends State<AddFolderPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  // final List<TaskItem> _tasks = [];
   final _taskController = TextEditingController();
 
   @override

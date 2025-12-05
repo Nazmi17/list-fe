@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/folder_provider.dart';
+import '../../../../core/providers/task_provider.dart';
+import '../../../../core/providers/auth_provider.dart'; 
 import '../../../../core/services/user_service.dart';
 import '../../../../core/services/api_service.dart';
 import '../../../../core/models/user.dart';
 import '../../../../core/models/folder.dart';
+import '../../../../core/routes/routes.dart'; 
 import '../widgets/user_card_widget.dart';
 import '../widgets/folder_selection_dialog.dart';
 
@@ -22,15 +25,59 @@ class _SharePageState extends State<SharePage> {
   bool _hasSearched = false;
   UserService? _userService;
 
+  Future<void> _showLogoutDialog(
+    BuildContext context,
+    AuthProvider authProvider,
+  ) async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1D1D1D),
+        title: const Text('Logout', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Are you sure you want to logout?',
+          style: TextStyle(color: Colors.grey),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Logout', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldLogout == true) {
+      await authProvider.logout();
+
+      if (context.mounted) {
+        context.read<TaskProvider>().clearState();
+        context.read<FolderProvider>().clearState();
+
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.login,
+          (route) => false,
+        );
+      }
+    }
+  }
+
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_userService == null) {
-      final apiService = Provider.of<ApiService>(context, listen: false);
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final apiService = context.read<ApiService>();
       _userService = UserService(apiService: apiService);
 
-      context.read<FolderProvider>().fetchFolders();
-    }
+      if (mounted) {
+        context.read<FolderProvider>().fetchFolders();
+      }
+    });
   }
 
   @override
@@ -48,7 +95,10 @@ class _SharePageState extends State<SharePage> {
       return;
     }
 
-    if (_userService == null) return;
+    if (_userService == null) {
+      final apiService = context.read<ApiService>();
+      _userService = UserService(apiService: apiService);
+    }
 
     setState(() {
       _isSearching = true;
@@ -119,6 +169,9 @@ class _SharePageState extends State<SharePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Ambil AuthProvider untuk logout
+    final authProvider = context.read<AuthProvider>();
+
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
@@ -136,12 +189,11 @@ class _SharePageState extends State<SharePage> {
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.white),
             onPressed: () {
-              // Settings action
+              _showLogoutDialog(context, authProvider);
             },
           ),
         ],
       ),
-// 
       body: Column(
         children: [
           // Search Bar

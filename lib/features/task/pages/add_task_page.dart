@@ -175,7 +175,6 @@ class _AddTaskPageState extends State<AddTaskPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Task Name
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -316,7 +315,6 @@ class _AddTaskPageState extends State<AddTaskPage> {
               ),
               const SizedBox(height: 20),
 
-              // Task Folder Section
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(

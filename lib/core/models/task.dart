@@ -1,3 +1,5 @@
+import 'user.dart'; 
+
 enum Priority { HIGH, MEDIUM, LOW }
 
 class Task {
@@ -13,6 +15,8 @@ class Task {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  final User? user;
+
   Task({
     required this.id,
     required this.title,
@@ -25,6 +29,7 @@ class Task {
     required this.userId,
     required this.createdAt,
     required this.updatedAt,
+    this.user,
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
@@ -32,14 +37,21 @@ class Task {
       id: json['id'],
       title: json['title'],
       description: json['description'],
-      priority: Priority.values.firstWhere((e) => e.name == json['priority']),
+      priority: Priority.values.firstWhere(
+        (e) => e.name == json['priority'],
+        orElse: () => Priority.MEDIUM, 
+      ),
       complete: json['complete'],
       startDate: DateTime.parse(json['start_date']),
       dueDate: DateTime.parse(json['due_date']),
       folderId: json['folderId'],
-      userId: json['userId'],
+      userId:
+          json['userId'] ??
+          json['user_id'], 
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
+
+      user: json['user'] != null ? User.fromJson(json['user']) : null,
     );
   }
 
@@ -56,6 +68,8 @@ class Task {
       'userId': userId,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+
+      if (user != null) 'user': user!.toJson(),
     };
   }
 
@@ -71,6 +85,7 @@ class Task {
     int? userId,
     DateTime? createdAt,
     DateTime? updatedAt,
+    User? user, 
   }) {
     return Task(
       id: id ?? this.id,
@@ -84,6 +99,7 @@ class Task {
       userId: userId ?? this.userId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      user: user ?? this.user,
     );
   }
 }

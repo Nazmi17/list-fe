@@ -159,7 +159,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context); // Kembali ke halaman sebelumnya
+        Navigator.pop(context); 
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -241,7 +241,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Task Name
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -274,7 +273,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
               ),
               const SizedBox(height: 20),
 
-              // Description
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -304,7 +302,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
               ),
               const SizedBox(height: 20),
 
-              // Priority
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -447,7 +444,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
               ),
               const SizedBox(height: 20),
 
-              // Date Selectors
               InkWell(
                 onTap: () => _selectDate(context, true),
                 child: Container(
@@ -534,7 +530,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
 
               const SizedBox(height: 30),
 
-              // Update Button
               SizedBox(
                 width: double.infinity,
                 height: 50,

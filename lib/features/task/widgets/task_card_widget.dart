@@ -53,10 +53,13 @@ class TaskCardWidget extends StatelessWidget {
     }
 
     String ownerName = 'Unknown';
+    
     if (currentUser != null && task.userId == currentUser.id) {
       ownerName = 'Me';
-    } else if (linkedFolder != null && linkedFolder.user != null) {
-      ownerName = linkedFolder.user!.username;
+    } else if (task.user != null) {
+      ownerName = task.user!.username;
+    } else {
+      ownerName = 'Unknown';
     }
 
     return Container(
@@ -111,7 +114,6 @@ class TaskCardWidget extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              // Edit icon (Opsional)
                               Icon(
                                 Icons.edit,
                                 size: 16,
@@ -130,10 +132,10 @@ class TaskCardWidget extends StatelessWidget {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                'Owner: $ownerName',
+                                'Owner: $ownerName', 
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: Colors.grey[600],
+                                  color: ownerName == 'Me' ? Colors.grey[600] : const Color(0xFF8BE4A9),
                                 ),
                               ),
                             ],
@@ -205,7 +207,6 @@ class TaskCardWidget extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        // Delete button
                         GestureDetector(
                           onTap: onDelete,
                           child: Container(

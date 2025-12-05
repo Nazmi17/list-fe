@@ -25,7 +25,6 @@ class UserCardWidget extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // Avatar
                 CircleAvatar(
                   radius: 24,
                   backgroundColor: const Color(0xFF8BE4A9),

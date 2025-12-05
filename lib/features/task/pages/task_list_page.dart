@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/providers/task_provider.dart';
+import '../../../../core/providers/folder_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/models/task.dart';
 import '../../../../core/routes/routes.dart';
@@ -59,44 +60,47 @@ class _TaskListPageState extends State<TaskListPage> {
     }
   }
 
-  Future<void> _showLogoutDialog(
-    BuildContext context,
-    AuthProvider authProvider,
-  ) async {
-    final shouldLogout = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1D1D1D),
-        title: const Text('Logout', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'Are you sure you want to logout?',
-          style: TextStyle(color: Colors.grey),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Logout', style: TextStyle(color: Colors.red)),
-          ),
-        ],
+Future<void> _showLogoutDialog(
+  BuildContext context,
+  AuthProvider authProvider,
+) async {
+  final shouldLogout = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: const Color(0xFF1D1D1D),
+      title: const Text('Logout', style: TextStyle(color: Colors.white)),
+      content: const Text(
+        'Are you sure you want to logout?',
+        style: TextStyle(color: Colors.grey),
       ),
-    );
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Logout', style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    ),
+  );
 
-    if (shouldLogout == true) {
-      await authProvider.logout();
-      if (context.mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoutes.login,
-          (route) => false,
-        );
-      }
+  if (shouldLogout == true) {
+    await authProvider.logout();
+
+    if (context.mounted) {
+      context.read<TaskProvider>().clearState();
+      context.read<FolderProvider>().clearState();
+
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.login,
+        (route) => false,
+      );
     }
   }
-
+}
   Future<void> _confirmDeleteTask(int taskId) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -154,7 +158,6 @@ class _TaskListPageState extends State<TaskListPage> {
       ),
       body: Column(
         children: [
-          // Date Selector
           Container(
             height: 110,
             color: const Color.fromARGB(255, 0, 0, 0),
@@ -173,49 +176,51 @@ class _TaskListPageState extends State<TaskListPage> {
                       _selectedDate = date;
                     });
                   },
-                  child: Container(
-                    width: 60,
-                    margin: const EdgeInsets.only(right: 12),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color(0xFF8BE4A9)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
+                  child: Center(
+                    child: Container(
+                      width: 60,
+                      margin: const EdgeInsets.only(right: 12),
+                      decoration: BoxDecoration(
                         color: isSelected
                             ? const Color(0xFF8BE4A9)
-                            : Colors.grey[800]!,
-                        width: 1,
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isSelected
+                              ? const Color(0xFF8BE4A9)
+                              : Colors.grey[800]!,
+                          width: 1,
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          _getMonthName(date),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: isSelected ? Colors.white : Colors.grey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _getMonthName(date),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isSelected ? Colors.white : Colors.grey,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${date.day}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.white : Colors.grey,
+                          const SizedBox(height: 4),
+                          Text(
+                            '${date.day}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: isSelected ? Colors.white : Colors.grey,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _getDayName(date),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: isSelected ? Colors.white : Colors.grey,
+                          const SizedBox(height: 4),
+                          Text(
+                            _getDayName(date),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: isSelected ? Colors.white : Colors.grey,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -223,7 +228,6 @@ class _TaskListPageState extends State<TaskListPage> {
             ),
           ),
 
-          // Filter Chips
           Container(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: SingleChildScrollView(
