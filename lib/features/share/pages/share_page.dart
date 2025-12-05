@@ -189,7 +189,7 @@ class _SharePageState extends State<SharePage> {
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.white),
             onPressed: () {
-              _showLogoutDialog(context, authProvider);
+             Navigator.pushNamed(context, AppRoutes.settings);
             },
           ),
         ],

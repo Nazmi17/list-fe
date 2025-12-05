@@ -131,13 +131,13 @@ Future<void> _showLogoutDialog(
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
+    // final authProvider = context.watch<AuthProvider>();
     final taskProvider = context.watch<TaskProvider>();
 
     final filteredTasks = _getFilteredTasks(taskProvider.tasks);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         elevation: 0,
@@ -152,7 +152,7 @@ Future<void> _showLogoutDialog(
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.white),
-            onPressed: () => _showLogoutDialog(context, authProvider),
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.settings),
           ),
         ],
       ),
@@ -278,7 +278,6 @@ Future<void> _showLogoutDialog(
             ),
           ),
 
-          // Task List
           Expanded(
             child: taskProvider.isLoading
                 ? const Center(
@@ -292,11 +291,9 @@ Future<void> _showLogoutDialog(
                     itemBuilder: (context, index) {
                       final task = filteredTasks[index];
 
-                      // MENGGUNAKAN TASK CARD WIDGET
                       return TaskCardWidget(
                         task: task,
                         onTap: () {
-                          // Navigasi ke Edit Task Page
                           Navigator.pushNamed(
                             context,
                             AppRoutes.editTask,

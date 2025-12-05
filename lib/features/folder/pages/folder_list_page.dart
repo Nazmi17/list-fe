@@ -128,7 +128,7 @@ class _FolderListPageState extends State<FolderListPage> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      _showLogoutDialog(context, authProvider);
+                      Navigator.pushNamed(context, AppRoutes.settings);
                     },
                   ),
                 ],

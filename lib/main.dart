@@ -6,9 +6,11 @@ import 'core/services/auth_service.dart';
 import 'core/services/storage_service.dart';
 import 'core/services/folder_service.dart';
 import 'core/services/task_service.dart';
+import 'core/services/user_service.dart'; 
 import 'core/providers/auth_provider.dart';
 import 'core/providers/folder_provider.dart';
 import 'core/providers/task_provider.dart';
+import 'core/providers/user_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +38,7 @@ void main() async {
 }
 
 class MainApp extends StatelessWidget {
-  final ApiService apiService; 
+  final ApiService apiService;
   final AuthService authService;
   final FolderService folderService;
   final TaskService taskService;
@@ -53,6 +55,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        // Provider untuk ApiService (agar bisa diakses oleh UserService di bawah)
         Provider<ApiService>(create: (_) => apiService),
 
         ChangeNotifierProvider(
@@ -63,6 +66,14 @@ class MainApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => TaskProvider(taskService: taskService),
+        ),
+
+        // --- USER PROVIDER ---
+        ChangeNotifierProvider(
+          create: (context) => UserProvider(
+            // Kita menggunakan context.read<ApiService>() karena ApiService sudah disediakan di atas
+            userService: UserService(apiService: context.read<ApiService>()),
+          ),
         ),
       ],
       child: MaterialApp(
